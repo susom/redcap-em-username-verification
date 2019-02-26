@@ -42,8 +42,8 @@
 
   "system-settings": [
     {
-      "key": "Instructions",
-      "name": "<h6><b>About Verify Username</b></h6><p>The Verify Username module is designed to help prevent erroneous usernames in the user table when using non-table-based authentication mechanisms.  In these methods, REDCap does not know how to 'verify' if a username that hasn't accessed the system is valid.</p><p>In order for the 'email new users' button to work, you must check the box above to Enable this EM for ALL projects in the system config.",
+      "key": "instructions",
+      "name": "<h6><b>About Verify Username</b></h6><p>The Verify Username module is designed to help prevent erroneous usernames in the user table when using non-table-based authentication mechanisms.  In these methods, REDCap does not know how to 'verify' if a username that hasn't accessed the system is valid.</p><p>In order for the <b>Email</b> button to work, you must check the box above to Enable this EM for ALL projects in the system config.",
       "type": "descriptive"
     },
     {

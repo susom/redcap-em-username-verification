@@ -1,4 +1,4 @@
-# username_verification
+# Username Verification
 
 This is a project to help verify usernames in REDCap for shibboleth or ldap based configurations
 
@@ -10,13 +10,16 @@ If you use a non-table based authentication system, REDCap may permit your users
  module uses the redcap_custom_verify_username hook to do a lookup with a service you have
  to define.
  
- ## Availalbe Lookup Services
+ ## How it Works
  
- I created a web-based validator for Stanford.  This is a web service that I have running on another 
- server that can access the university's directory.  When a user enters a new username, this module
- will make a POST to a URL ENDPOINT defined in the config.
+ This module uses a lookup-service to determine if a username is valid.
  
- This EM post a `username` value as was entered by the end-user.  Your web-service should parse
+ I created a web-based validator for Stanford.  This uses a different web service that I have running
+ on another server that can access the university's directory.  When a user enters a new username, this module
+ will make a POST to a URL ENDPOINT defined in the config.  You could create your own endpoint and customize
+ url in the config.
+ 
+ The em will post a `username` value as was entered by the end-user.  Your web-service should parse
  this and do a lookup.  It can then return three things as a json-encoded object:
 
  ```json
@@ -32,9 +35,9 @@ If you use a non-table based authentication system, REDCap may permit your users
  ]
 ```
 
-For messages with a `false` status there is no need to return a `user` object.
+For messages with a `false` status there is no need to return a `user` object.  If you return a 'message' it will be highlighted in RED.
 
-Here is an example from the Stanford web-service:
+Here is an example of a 'false' response from our Stanford web-service:
 ```json
 [
     "status":  FALSE
@@ -42,7 +45,29 @@ Here is an example from the Stanford web-service:
 ]
 ```
 
-If the status is `false` then the message will be rendered in a RED div and the add-user workflow
- will be aborted.
- 
-If the status is 'true' then the message (if any) will be rendered in a GREEN div.
+If the status is `true` then the message (if any) will be rendered in a GREEN div.
+
+Here is an example success message which can be used as an affirmation:
+```
+Susan C Weber (scweber) will be added to this project but has never used this REDCap server before.
+Click here to send them an email with a link to the project:  [BUTTON]
+
+Please be sure you to configure appropriate user rights for this user.
+We strongly recommend using User Roles to manage project rights.
+If you are using Data Access Groups, assign the user to an appropriate DAG.
+If you have questions about permissions or user roles, contact redcap-help@lists.stanford.edu
+```
+You can see that we know this user's full name because it was returned from the lookup -- this allows us to present
+a nicer message to the end users.  We also have an option for the user to press a button and send an email to the
+new user with an introduction to REDCap.  The normal REDCap mechanism does not support this since the new record
+isn't really a user record, just a user-rights record.
+
+## Adding A Different Lookup
+
+I made a 'stub' for someone to implement an LDAP lookup.  All you would have to do is build out the LADPVerifier class
+and add the parameters to the config.json.
+
+## Config
+
+In order to use the email option you need to enable this module for all projects (as the email uses a project url).
+This can be done globally in the system EM configuration page at the top.
