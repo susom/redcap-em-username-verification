@@ -22,7 +22,7 @@
   ],
 
   "allow-exit": [
-    "redcap_cuXXXstom_verify_username"
+    "redcap_custom_verify_username"
   ],
 
   "no-auth-pages": [
@@ -42,8 +42,8 @@
 
   "system-settings": [
     {
-      "key": "instructions",
-      "name": "<h6><b>About Verify Username</b></h6><p>The Verify Username module is designed to help prevent erroneous usernames in the user table when using non-table-based authentication mechanisms.  In these methods, REDCap does not know how to 'verify' if a username that hasn't accessed the system is valid.</p>",
+      "key": "Instructions",
+      "name": "<h6><b>About Verify Username</b></h6><p>The Verify Username module is designed to help prevent erroneous usernames in the user table when using non-table-based authentication mechanisms.  In these methods, REDCap does not know how to 'verify' if a username that hasn't accessed the system is valid.</p><p>In order for the 'email new users' button to work, you must check the box above to Enable this EM for ALL projects in the system config.",
       "type": "descriptive"
     },
     {
@@ -73,12 +73,6 @@
       "name": "<b>Whitelisted Usernames</b><br>A comma-separated list of usernames to always verify as valid",
       "required": false,
       "type": "text"
-    },
-    {
-      "key": "create-new-user",
-      "name": "<b>Auto-create New Users</b><br>If the validation service returns a valid user that has not yet been<br>added to REDCap, you do want this module to create a new user<br>account for them automatically?  The upside of doing <br>this is that the new user will receive the standard REDCap email about <br>being added to a project.",
-      "required": false,
-      "type": "checkbox"
     },
     {
       "key": "enable-system-debug-logging",
