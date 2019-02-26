@@ -62,6 +62,11 @@ a nicer message to the end users.  We also have an option for the user to press 
 new user with an introduction to REDCap.  The normal REDCap mechanism does not support this since the new record
 isn't really a user record, just a user-rights record.
 
+It is your responsiblitiy to properly secure your webservice that REDCap uses.  For example, you might want to embed
+a unique token in the URL and you may want to filter by IP address so it only accepts requests from your REDCap
+server's IP address.
+
+
 ## Adding A Different Lookup
 
 I made a 'stub' for someone to implement an LDAP lookup.  All you would have to do is build out the LADPVerifier class
