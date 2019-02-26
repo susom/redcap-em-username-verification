@@ -7,7 +7,6 @@ require_once ("src/CleanupHelper.php");
 use \User;
 
 
-
 // Validate setup
 $isValid = $module->validateSetup();
 

@@ -22,7 +22,7 @@
   ],
 
   "allow-exit": [
-    "redcap_cuxstom_verify_username"
+    "redcap_cuXXXstom_verify_username"
   ],
 
   "no-auth-pages": [

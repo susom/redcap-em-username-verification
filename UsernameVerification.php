@@ -64,7 +64,6 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
 
             // See if the user already exists in REDCap
             $existingUser = User::getUserInfo($username);
-
             $this->emDebug($status, $existingUser);
 
             if ($existingUser) {
@@ -72,41 +71,21 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
                 $msg[] = "<b>" . $existingUser['user_firstname'] . " ($username)</b> has been added to this project and will be " .
                     "notified by email with a link to the project.";
             } else {
-                // They are NOT an existing user
-
-                // Do we want to try and create a new user?
-                $createNewUser = $this->getSystemSetting('create-new-user');
-
-                if ($createNewUser) {
-                    // Did we get user information back from the web service?
-                    if (empty($user)) {
-                        // Insufficient user information
-                        $msg[] = "<b>$username</b> has been added to this project but does not have an account on this " .
-                            "REDCap server.  Because there is no email address, you will have to manually contact the user " .
-                            "and provide them with instructions to access REDCap at " . APP_PATH_WEBROOT;
-                    } else {
-                        $result = $this->registerNewUser($user);
-                        $this->emDebug("Adding new user", $user, $result);
-                        if ($result) {
-                            // User Created
-                            $msg[] = "<b>" . $user['user_firstname'] . " ($username)</b>  has been added to this project " .
-                                " but has never used this REDCap server before.  A new user account was just created " .
-                                " and the user should be receiving an automated email with a link to this project.";
-                        } else {
-                            // User Creation Failed
-                            $msg[] = "<b>" . $user['user_firstname'] . " ($username)</b>  has been added to this project " .
-                                " but the server was unable to create a new user for them.  You will have to manually " .
-                                " contact the user and provide them with instructions to access REDCap at " . APP_PATH_WEBROOT;
-                        }
-                    }
-                } else {
-                    // We do not create new users
+                // Cater the message depending on if we have 'user info'
+                if (empty($user)) {
                     $msg[] = "<b>$username</b> has been added to this project but does not have an account on this " .
-                        "REDCap server.  You will have to manually contact the user and provide them with instructions " .
-                        "to access REDCap at " . APP_PATH_WEBROOT;
+                        "REDCap server.  Because there is no email address, you will have to manually contact the user " .
+                        "and provide them with instructions to access REDCap at " . APP_PATH_WEBROOT_FULL;
+                } else {
+                    // Allow user to email user manually (since user doesn't exist in system)
+                    $url = $this->getUrl("notify.php",false, false);
+                    $msg[] = "<b>" . $user['user_displayname'] . " ($username)</b> will be added to this project " .
+                            "but has never used this REDCap server before.<br>Click here to send them an email with " .
+                            "a link to the project: <div id='send_intro_email' data-username='$username' " .
+                            "data-url='$url' class='btn btn-xs btn-success'>Send Intro Email</div>." .
+                            "<script type='text/javascript' src='" . $this->getUrl("notify.js") ."'></script>";
                 }
             }
-
 
             $msg[] = "Please be sure you to configure appropriate user rights for this user.<br>" .
                 "We strongly recommend using <u>User Roles</u> to manage project rights.<br>" .
@@ -116,7 +95,7 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
         }
 
         // Build message
-        $message = implode("<br><br>",$msg);
+        $message = implode("<br><br>",array_filter($msg));
 
 
         // Previously with this hook, you returned $status and $message, but now you have to render the results yourself.
@@ -158,35 +137,33 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
     }
 
 
-
-
-    /**
-     * In some cases we want to register the newly added user into REDCap as this will result in them being sent the standard
-     * email about being added to a new project.  Alternately, we could manually email them.
-     *
-     * @param $user
-     * @return bool
-     */
-    private function registerNewUser($user) {
-    	global $allow_create_db_default;
-	    $sql = sprintf("insert into redcap_user_information " .
-                "  (username, user_email, user_firstname, user_lastname, user_creation, allow_create_db) ".
-                "values ('%s', '%s', '%s', '%s', NOW(), %s)",
-                prep($user['username']),
-                prep($user['user_email']),
-			    prep($user['user_firstname']),
-                prep($user['user_lastname']) . " (never logged in) ",
-			    $allow_create_db_default);
-    	$q = db_query($sql);
-        if ($q) {
-            global $project_id;
-            $desc = "Created by " . USERID;
-            if (!empty($project_id)) $desc .= " in project $project_id";
-            REDCap::logEvent("User Created From Add User",$desc, $sql);
-            return true;
-        } else {
-            return false;
-        }
-    }
+    // /**
+    //  * In some cases we want to register the newly added user into REDCap as this will result in them being sent the standard
+    //  * email about being added to a new project.  Alternately, we could manually email them.
+    //  *
+    //  * @param $user
+    //  * @return bool
+    //  */
+    // private function registerNewUser($user) {
+    // 	global $allow_create_db_default;
+	//     $sql = sprintf("insert into redcap_user_information " .
+    //             "  (username, user_email, user_firstname, user_lastname, user_creation, allow_create_db) ".
+    //             "values ('%s', '%s', '%s', '%s', NOW(), %s)",
+    //             prep($user['username']),
+    //             prep($user['user_email']),
+	// 		    prep($user['user_firstname']),
+    //             prep($user['user_lastname']) . " (never logged in) ",
+	// 		    $allow_create_db_default);
+    // 	$q = db_query($sql);
+    //     if ($q) {
+    //         global $project_id;
+    //         $desc = "Created by " . USERID;
+    //         if (!empty($project_id)) $desc .= " in project $project_id";
+    //         REDCap::logEvent("User Created From Add User",$desc, $sql);
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
 }
