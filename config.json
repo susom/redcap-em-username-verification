@@ -1,0 +1,93 @@
+{
+  "name": "Username Verification",
+
+  "namespace":"Stanford\\UsernameVerification",
+
+  "description": "Provides ability to lookup username details from external sources",
+
+  "versions": [
+    { "0.1": "Initial" }
+  ],
+
+  "authors": [
+    {
+      "name": "Andrew Martin",
+      "email": "andy123@stanford.edu",
+      "institution": "Stanford University"
+    }
+  ],
+
+  "permissions": [
+    "redcap_custom_verify_username"
+  ],
+
+  "allow-exit": [
+    "redcap_cuxstom_verify_username"
+  ],
+
+  "no-auth-pages": [
+  ],
+
+  "links": {
+    "control-center": [
+      {
+        "name": "Verify Username Cleanup",
+        "icon": "gear",
+        "url": "cleanup.php"
+      }
+    ],
+    "project": [
+    ]
+  },
+
+  "system-settings": [
+    {
+      "key": "instructions",
+      "name": "<h6><b>About Verify Username</b></h6><p>The Verify Username module is designed to help prevent erroneous usernames in the user table when using non-table-based authentication mechanisms.  In these methods, REDCap does not know how to 'verify' if a username that hasn't accessed the system is valid.</p>",
+      "type": "descriptive"
+    },
+    {
+      "key": "method",
+      "name": "<b>Verification Method</b><br>The Username Verifier was designed to be extended.<br>For now, the only option is web-service.",
+      "required": true,
+      "type": "radio",
+      "choices": [
+        {
+          "name": "Web Service",
+          "value": "web-service"
+        }
+      ]
+    },
+    {
+      "key": "web-service-url",
+      "name": "<b>Web Service URL</b><br>This is the API endpoint that will handle our calls.<br>This url should <code>username</code> in the query string and return a json<br>array containing status, message, and user.<i>e.g.</i><br><code>{<br>&nbsp;&nbsp;\"user\": {<br>&nbsp;&nbsp;&nbsp;&nbsp;\"username\":\"andy123\",<br>&nbsp;&nbsp;&nbsp;&nbsp;\"user_displayname\":\"Andy Martin\",<br>&nbsp;&nbsp;&nbsp;&nbsp;\"user_firstname\":\"Andrew\",<br>&nbsp;&nbsp;&nbsp;&nbsp;\"user_lastname\":\"Martin\",<br>&nbsp;&nbsp;&nbsp;&nbsp;\"user_email\":\"andy123@stanford.edu\"<br>&nbsp;&nbsp;},<br>&nbsp;&nbsp;\"status\":true,<br>&nbsp;&nbsp;\"message\":\"Custom Message for End User\"<br>}</code><br>See the documentation for examples.",
+      "required": true,
+      "type": "text",
+      "branchingLogic": {
+        "field": "method",
+        "value": "web-service"
+      }
+    },
+    {
+      "key": "whitelist",
+      "name": "<b>Whitelisted Usernames</b><br>A comma-separated list of usernames to always verify as valid",
+      "required": false,
+      "type": "text"
+    },
+    {
+      "key": "create-new-user",
+      "name": "<b>Auto-create New Users</b><br>If the validation service returns a valid user that has not yet been<br>added to REDCap, you do want this module to create a new user<br>account for them automatically?  The upside of doing <br>this is that the new user will receive the standard REDCap email about <br>being added to a project.",
+      "required": false,
+      "type": "checkbox"
+    },
+    {
+      "key": "enable-system-debug-logging",
+      "name": "<b>Enable Debug Logging</b><br>If you have the Stanford emLogger external module installed and configured,<br> you can enable additional debug-level logging through this checkbox</b>",
+      "required": false,
+      "type": "checkbox"
+    }
+  ],
+
+  "project-settings": [
+  ]
+}
