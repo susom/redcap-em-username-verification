@@ -10,6 +10,14 @@ use \User;
 // Validate setup
 $isValid = $module->validateSetup();
 
+
+// Get Users
+$allUsers = User::getUsernames([],true);
+
+// Get User Rights Orphans
+$userRightsOrphans = CleanupHelper::getUserRightsOrphans();
+
+
 // Handle valid post requests
 if (!empty($_POST) && $isValid && SUPER_USER) {
 
@@ -148,12 +156,6 @@ if (!SUPER_USER) {
     exit();
 }
 
-
-// Get Users
-$allUsers = User::getUsernames([],true);
-
-// Get User Rights Orphans
-$userRightsOrphans = CleanupHelper::getUserRightsOrphans();
 
 
 // START PAGE

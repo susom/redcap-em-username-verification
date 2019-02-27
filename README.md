@@ -45,18 +45,15 @@ Here is an example of a 'false' response from our Stanford web-service:
 ]
 ```
 
+![Example of a failed lookup](docs/false_response.png)
+
+
 If the status is `true` then the message (if any) will be rendered in a GREEN div.
 
 Here is an example success message which can be used as an affirmation:
-```
-Susan C Weber (scweber) will be added to this project but has never used this REDCap server before.
-Click here to send them an email with a link to the project:  [BUTTON]
 
-Please be sure you to configure appropriate user rights for this user.
-We strongly recommend using User Roles to manage project rights.
-If you are using Data Access Groups, assign the user to an appropriate DAG.
-If you have questions about permissions or user roles, contact redcap-help@lists.stanford.edu
-```
+![Example of a failed lookup](docs/success_response.png)
+
 You can see that we know this user's full name because it was returned from the lookup -- this allows us to present
 a nicer message to the end users.  We also have an option for the user to press a button and send an email to the
 new user with an introduction to REDCap.  The normal REDCap mechanism does not support this since the new record

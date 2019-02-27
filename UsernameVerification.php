@@ -98,13 +98,15 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
         $message = implode("<br><br>",array_filter($msg));
 
 
-        // Previously with this hook, you returned $status and $message, but now you have to render the results yourself.
-        if ($status) {
-            if (strlen($message) > 0) echo "<div class='alert alert-success text-center'>" . $message . "</div>";
-        } else {
-            echo "<div class='alert alert-danger text-center'>" . $message . "</div>";
-            exit();
-        }
+        return array('status'=>$status, 'message'=>$message);
+
+        // // Previously with this hook, you returned $status and $message, but now you have to render the results yourself.
+        // if ($status) {
+        //     if (strlen($message) > 0) echo "<div class='alert alert-success text-center'>" . $message . "</div>";
+        // } else {
+        //     echo "<div class='alert alert-danger text-center'>" . $message . "</div>";
+        //     exit();
+        // }
     }
 
 
