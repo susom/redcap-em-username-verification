@@ -121,18 +121,28 @@ class CleanupHelper
 
         $subject = "REDCap Maintenance: An incorrect/invalid username ($username) has been removed";
 
-        $message = "Dear REDCap user,<br><br>During routine scanning of the server we discovered an invalid username " .
-            "you may have added to a REDCap project.<br><br><b>Project: </b> <u>$title</u> (#$pid)<br>" .
-            "<b>Username: </b> <u>$username</u><br><br>" .
-            "This can happen when the username entered in user-rights isn't the same as the <u>official</u> user's id.  " .
-            "For example, using <code>jane.doe</code> or <code>jane.doe@university.com</code> instead of the official " .
-            "id of <code>jdoe</code>.<br><br>" .
-            "Because <u>$username</u> was not valid and could not be used by the intended user, it has been removed " .
-            "from your project's user-rights table.  " .
-            "If you wish to have the intended user access your project, please visit user-rights and add them " .
-            "using a valid ID.<br><br>Thank you!  Sincerely,<br><br>-- REDCap support";
+        $message = "
+            <p>Dear REDCap user,</p>
+            <p>During routine scanning of the server we discovered an invalid username you may have added to a REDCap project.</p>
+            <table>
+                <tr>
+                    <th style='text-align:left;'><b>Affected Project: </b></th><td><u>$title</u> (#$pid)</td>
+                </tr>
+                <tr>
+                    <th style='text-align:left;'><b>Invalid Username: </b></th><td><u>$username</u></td>
+                </tr>
+            </table>
+            <p>This can happen when the username entered in user-rights isn't the same as the <u>official</u> user's id.
+            For example, using <code>jane.doe</code> or <code>jane.doe@university.com</code> instead of the official 
+            id of <code>jdoe</code>.</p>
+            <p>Because <u>$username</u> was not valid and could not be used by the intended user, it has been removed 
+            from your project's user-rights table.  If you wish to have the intended user access your project, please 
+            visit user-rights and add them using a valid ID.</p>
+            <p>Thank you!</p>
+            <p>Sincerely,</p>
+            <p> -- REDCap support</p>";
 
-        $result = REDCap::email($to_email, $from_email, $subject, $message, $from_email);
+        $result = REDCap::email($to_email, $from_email, $subject, $message);
         REDCap::logEvent("Username Verification - Email Notification", "Notified $to_email re: $username on project $pid","",null,null,$pid);
         return $result;
     }

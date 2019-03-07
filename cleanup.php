@@ -74,16 +74,18 @@ if (!empty($_POST) && $isValid && SUPER_USER) {
             if ($success == false) {
                 // Failed
 
-                $ts            = empty($ur_user['ts']) ? "" : \DateTimeRC::format_ts_from_int_to_ymd($ur_user['ts']);
-                $pid           = $ur_user['project_id'];
-                $created_user  = $ur_user['user'];
-                $created_email = $ur_user['user_email'];
-                $btn_email     = empty($created_email) ? "" : "<div " .
-                    "data-action='email' " .
-                    "data-pid='" . $pid . "' " .
-                    "data-username='" . $username . "' " .
-                    "data-created_email='".$created_email."' " .
-                    "data-created_user='" . $created_user . "' " .
+                $ts               = empty($ur_user['ts']) ? "" : \DateTimeRC::format_ts_from_int_to_ymd($ur_user['ts']);
+                $pid              = $ur_user['project_id'];
+                $created_by_user  = $ur_user['user'];
+                $created_by_email = $ur_user['user_email'];
+
+                // Build buttons
+                $btn_email        = empty($created_by_email) ? "" : "<div " .
+                    "data-action='email' "   .
+                    "data-pid='"             . $pid             . "' " .
+                    "data-username='"        . $username        . "' " .
+                    "data-created_by_email='". $created_by_email. "' " .
+                    "data-created_by_user='" . $created_by_user . "' " .
                     "class='btn btn-xs btn-success'>Email Creator</div>";
 
                 $btn_delete    = "<div " .
@@ -96,8 +98,8 @@ if (!empty($_POST) && $isValid && SUPER_USER) {
                 $result[] = [
                     $username,
                     $pid,
-                    $created_user,
-                    $created_email,
+                    $created_by_user,
+                    $created_by_email,
                     $ts,
                     $btn_email,
                     $btn_delete
@@ -108,11 +110,11 @@ if (!empty($_POST) && $isValid && SUPER_USER) {
 
     // HANDLE BUTTON CLICKS
     if (isset($_POST['data']['action'])) {
-        $action         = $_POST['data']['action'];
-        $username       = @$_POST['data']['username'];
-        $pid            = @$_POST['data']['pid'];
-        $created_user   = @$_POST['data']['created_user'];
-        $created_email  = @$_POST['data']['email'];
+        $action            = $_POST['data']['action'];
+        $username          = @$_POST['data']['username'];
+        $pid               = @$_POST['data']['pid'];
+        $created_by_user   = @$_POST['data']['created_by_user'];
+        $created_by_email  = @$_POST['data']['created_by_email'];
 
         switch($action) {
             case "suspend":
@@ -125,7 +127,7 @@ if (!empty($_POST) && $isValid && SUPER_USER) {
                 $result = CleanupHelper::deleteUserRightsUser($username, $pid);
                 break;
             case "email":
-                $result = CleanupHelper::emailCreator($created_email, $username, $pid);
+                $result = CleanupHelper::emailCreator($created_by_email, $username, $pid);
                 break;
             default:
                 $module->emError("Unhandled Action: $action");

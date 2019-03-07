@@ -31,8 +31,8 @@
   "links": {
     "control-center": [
       {
-        "name": "Verify Username Cleanup",
-        "icon": "gear",
+        "name": "Username Verification Cleanup",
+        "icon": "group_gear",
         "url": "cleanup.php"
       }
     ],
