@@ -22,7 +22,12 @@ $module->emDebug("IsValid:",$isValid, $allUsers, $userRightsOrphans);
 
 
 // Handle valid post requests
-if (!empty($_POST) && $isValid && SUPER_USER) {
+if (!empty($_POST) && SUPER_USER) {
+
+    if (! $isValid) {
+        $module->emError($_POST, "Invalid Configuration");
+        die('invalid configuration');
+    }
 
     $result = [];
 

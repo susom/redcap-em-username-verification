@@ -34,7 +34,7 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
             id of <code>jdoe</code>.</p>
             <p>Because <u>{{username}}</u> was not valid and could not be used by the intended user, it has been removed 
             from your project's user-rights table.  If you wish to have the intended user access your project, please 
-            visit <a href="{{app-url}}/UserRights/index.php?pid={{pid}}" target="_blank">User Rights</a> and add the user
+            visit <a href="{{app-url}}UserRights/index.php?pid={{pid}}" target="_blank">User Rights</a> and add the user
             with a valid ID.</p>
             <p>Thank you!</p>
             <p>Sincerely,</p>
