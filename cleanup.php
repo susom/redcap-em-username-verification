@@ -18,6 +18,9 @@ $allUsers = User::getUsernames([],true);
 $userRightsOrphans = CleanupHelper::getUserRightsOrphans();
 
 
+$module->emDebug("IsValid:",$isValid, $allUsers, $userRightsOrphans);
+
+
 // Handle valid post requests
 if (!empty($_POST) && $isValid && SUPER_USER) {
 
