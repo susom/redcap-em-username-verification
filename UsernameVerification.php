@@ -6,7 +6,7 @@ include_once "src/WebServiceVerifier.php";
 
 use \User;
 use \REDCap;
-
+use \Project;
 
 class UsernameVerification extends \ExternalModules\AbstractExternalModule
 {
@@ -17,6 +17,31 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
     public $createNewUser;
     public $errors;         // An array to hold any errors for later display
 
+    const  DEFAULT_CLEANUP_EMAIL_SUBJECT  = "REDCap Maintenance: An incorrect/invalid username ({{username}}) has been removed";
+    const  DEFAULT_CLEANUP_EMAIL_TEMPLATE = <<<EOT
+            <p>Dear REDCap user,</p>
+            <p>During routine scanning of the server we discovered an invalid username you may have added to a REDCap project.</p>
+            <table>
+                <tr>
+                    <th style='text-align:left;'><b>Affected Project: </b></th><td><u>{{title}}}</u> (#{{pid}})</td>
+                </tr>
+                <tr>
+                    <th style='text-align:left;'><b>Invalid Username: </b></th><td><u>{{username}}</u></td>
+                </tr>
+            </table>
+            <p>This can happen when the username entered in user-rights isn't the same as the <u>official</u> user's id.
+            For example, using <code>jane.doe</code> or <code>jane.doe@university.com</code> instead of the official 
+            id of <code>jdoe</code>.</p>
+            <p>Because <u>{{username}}</u> was not valid and could not be used by the intended user, it has been removed 
+            from your project's user-rights table.  If you wish to have the intended user access your project, please 
+            visit <a href="{{app-url}}/UserRights/index.php?pid={{pid}}" target="_blank">User Rights</a> and add the user
+            with a valid ID.</p>
+            <p>Thank you!</p>
+            <p>Sincerely,</p>
+            <p> -- REDCap support</p>
+EOT;
+
+
 
     public function __construct()
     {
@@ -25,6 +50,32 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
         // Load the method
         $this->method = $this->getSystemSetting('method');
         $this->whitelist = preg_split ('/(\s*,\s*)*,+(\s*,\s*)*/', $this->getSystemSetting('whitelist'));
+    }
+
+
+    /**
+     * Since default config.json options aren't working reliably, we will fill them in here
+     * @param $version
+     */
+    public function redcap_module_system_enable($version) {
+        $this->setDefaults();
+    }
+
+    public function redcap_module_save_configuration($project_id) {
+        $this->setDefaults();
+    }
+
+
+    /**
+     * Set the ui config defaults
+     */
+    public function setDefaults() {
+        // Set default email template
+        $template = $this->getSystemSetting('cleanup-email-template');
+        if (empty($template)) $this->setSystemSetting('cleanup-email-template', self::DEFAULT_CLEANUP_EMAIL_TEMPLATE);
+
+        $subject = $this->getSystemSetting('cleanup-email-subject');
+        if (empty($subject)) $this->setSystemSetting('cleanup-email-subject', self::DEFAULT_CLEANUP_EMAIL_SUBJECT);
     }
 
 
@@ -128,6 +179,65 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
 
         return array($status, $message, $user);
     }
+
+
+    /**
+     * Replace template with values from context data array
+     * @param       $template
+     * @param array $data
+     * @return mixed
+     */
+    public function pipe($template, $data = array()) {
+        foreach ($data as $k => $v) {
+            $template = str_replace("{{" . $k . "}}", $v, $template);
+        }
+        return $template;
+    }
+
+
+    /**
+     * Send email
+     * @param $to
+     * @param $username
+     * @param $pid
+     * @return bool
+     * @throws \Exception
+     */
+    public function sendCleanupEmail($to, $username, $pid) {
+
+        $project = new Project($pid);
+
+        $context = array(
+            "title"     => $project->project['app_title'],
+            "pid"       => $pid,
+            "app-url"   => APP_PATH_WEBROOT,
+            "username"  => $username
+        );
+
+        $subject = $this->getSystemSetting('cleanup-email-subject');
+        if (empty($subject)) $subject = self::DEFAULT_CLEANUP_EMAIL_SUBJECT;
+        $subject = $this->pipe($subject,$context);
+
+        $body = $this->getSystemSetting('cleanup-email-template');
+        if (empty($body)) $body = self::DEFAULT_CLEANUP_EMAIL_TEMPLATE;
+        $body = $this->pipe($body,$context);
+
+        $from = $this->getSystemSetting('cleanup-email-from');
+        if (empty($from)) {
+            $current_user = User::getUserInfo(USERID);
+            $from         = $current_user['user_email'];
+        }
+
+        $result = REDCap::email($to, $from, $subject, $body);
+
+        if ($result) {
+            REDCap::logEvent("Username Verification Cleanup - Email Notification", "Notified $to re: $username on project $pid", "", null, null, $pid);
+        }
+
+        return $result;
+    }
+
+
 
 
     // /**

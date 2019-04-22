@@ -127,7 +127,7 @@ if (!empty($_POST) && $isValid && SUPER_USER) {
                 $result = CleanupHelper::deleteUserRightsUser($username, $pid);
                 break;
             case "email":
-                $result = CleanupHelper::emailCreator($created_by_email, $username, $pid);
+                $result = $module->sendCleanupEmail($created_by_email, $username, $pid); //CleanupHelper::emailCreator($created_by_email, $username, $pid);
                 break;
             default:
                 $module->emError("Unhandled Action: $action");

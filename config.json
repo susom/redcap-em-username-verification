@@ -3,7 +3,7 @@
 
   "namespace":"Stanford\\UsernameVerification",
 
-  "description": "Provides ability to lookup username details from external sources",
+  "description": "Provides ability to lookup username details from external sources and verify on user-rights.  Also provides for cleanup of invalid users in your user-rights table.",
 
   "versions": [
     { "0.1": "Initial" }
@@ -18,7 +18,9 @@
   ],
 
   "permissions": [
-    "redcap_custom_verify_username"
+    "redcap_custom_verify_username",
+    "redcap_module_system_enable",
+    "redcap_module_save_configuration"
   ],
 
   "allow-exit": [
@@ -67,6 +69,24 @@
         "field": "method",
         "value": "web-service"
       }
+    },
+    {
+      "key": "cleanup-email-subject",
+      "name": "<b>Email Cleanup Subject</b><br>Subject line of cleanup email.<br>Supports these tags:<br><code>{{title}}, {{pid}}, {{username}}, {{app-url}}",
+      "required": false,
+      "type": "text"
+    },
+    {
+      "key": "cleanup-email-template",
+      "name": "<b>Email Cleanup Template</b><br>When you cleanup invalid user ids, this email can be sent to the user that created the invalid ID<br>Supports these tags:<br><code>{{title}}, {{pid}}, {{username}}, {{app-url}}",
+      "required": false,
+      "type": "rich-text"
+    },
+    {
+      "key": "cleanup-email-from",
+      "name": "<b>Send Cleanup From</b><br>Select the reply-to email address for the cleanup email alerts<br>(leave blank for current superuser that presses button)",
+      "required": false,
+      "type": "text"
     },
     {
       "key": "whitelist",
