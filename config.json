@@ -23,10 +23,6 @@
     "redcap_module_save_configuration"
   ],
 
-  "allow-exit": [
-    "redcap_custom_verify_username"
-  ],
-
   "no-auth-pages": [
   ],
 
