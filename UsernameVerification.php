@@ -210,7 +210,7 @@ EOT;
         $context = array(
             "title"     => $project->project['app_title'],
             "pid"       => $pid,
-            "app-url"   => APP_PATH_WEBROOT,
+            "app-url"   => APP_PATH_WEBROOT_FULL,
             "username"  => $username
         );
 
