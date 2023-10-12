@@ -22,7 +22,7 @@ $module->emDebug("IsValid:",$isValid, $allUsers, $userRightsOrphans);
 
 
 // Handle valid post requests
-if (!empty($_POST) && SUPER_USER) {
+if (!empty($_POST) && $module->isSuperUser()) {
 
     if (! $isValid) {
         $module->emError($_POST, "Invalid Configuration");
@@ -76,16 +76,15 @@ if (!empty($_POST) && SUPER_USER) {
     if (@$_POST['scan-user-rights'] == 1) {
         // Scan users
         foreach ($userRightsOrphans as $ur_user) {
-            $username = $ur_user['username'];
+            $username = htmlspecialchars($ur_user['username'],ENT_QUOTES);
             list($success, $message, $user) = $module->verifyUsername($username);
 
             if ($success == false) {
                 // Failed
-
                 $ts               = empty($ur_user['ts']) ? "" : \DateTimeRC::format_ts_from_int_to_ymd($ur_user['ts']);
-                $pid              = $ur_user['project_id'];
-                $created_by_user  = $ur_user['user'];
-                $created_by_email = $ur_user['user_email'];
+                $pid              = intval($ur_user['project_id']);
+                $created_by_user  = htmlspecialchars($ur_user['user'], ENT_QUOTES);
+                $created_by_email = htmlspecialchars($ur_user['user_email'], ENT_QUOTES);
 
                 // Build buttons
                 $btn_email        = empty($created_by_email) ? "" : "<div " .
