@@ -56,7 +56,7 @@ EOT;
 
     private function getAllowlist() {
         if (is_null($this->allowlist)) {
-            $this->allowlist = preg_split ('/(\s*,\s*)*,+(\s*,\s*)*/', $this->getSystemSetting('allowlist'));
+            $this->allowlist = array_map('trim', explode(",", $this->getSystemSetting('allowlist')));
         }
         return $this->allowlist;
     }
