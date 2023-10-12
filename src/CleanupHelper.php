@@ -81,7 +81,7 @@ class CleanupHelper
         // Remove user from auth table (in case if using Table-based authentication)
         $q3 = db_query("delete from redcap_auth where username = '" . db_escape($username) . "'");
         // Remove user from table
-        $q4 = db_query("delete from redcap_user_whitelist where username = '" . db_escape($username) . "'");
+        $q4 = db_query("delete from redcap_user_allowlist where username = '" . db_escape($username) . "'");
         // Remove user from table
         $q5 = db_query("delete from redcap_auth_history where username = '" . db_escape($username) . "'");
         // Remove user from table

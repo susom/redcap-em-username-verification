@@ -12,8 +12,8 @@ class UsernameVerification extends \ExternalModules\AbstractExternalModule
 {
     use emLoggerTrait;
 
-    public $method;
-    public $whitelist;      // Array of usernames to always return as true
+    private $method;
+    private $allowlist;      // Array of usernames to always return as true
     public $createNewUser;
     public $errors;         // An array to hold any errors for later display
 
@@ -43,13 +43,22 @@ EOT;
 
 
 
-    public function __construct()
-    {
-        parent::__construct();
+    /**
+     * Return method using internal cache
+     * @return mixed
+     */
+    private function getMethod() {
+        if (is_null($this->method)) {
+            $this->method = $this->getSystemSetting('method');
+        }
+        return $this->method;
+    }
 
-        // Load the method
-        $this->method = $this->getSystemSetting('method');
-        $this->whitelist = preg_split ('/(\s*,\s*)*,+(\s*,\s*)*/', $this->getSystemSetting('whitelist'));
+    private function getAllowlist() {
+        if (is_null($this->allowlist)) {
+            $this->allowlist = preg_split ('/(\s*,\s*)*,+(\s*,\s*)*/', $this->getSystemSetting('allowlist'));
+        }
+        return $this->allowlist;
     }
 
 
@@ -84,8 +93,8 @@ EOT;
      * @return bool
      */
     public function validateSetup() {
-        if (empty($this->method)) $this->errors[] = "Please set a valid method in the configuration page";
-        if ($this->method == 'web-service-url' && empty($this->getSystemSetting('web-service-url'))) $this->errors[] = "Please set a valid web-service-url that when called will return the required user details";
+        if (empty($this->getMethod())) $this->errors[] = "Please set a valid method in the configuration page";
+        if ($this->getMethod() == 'web-service-url' && empty($this->getSystemSetting('web-service-url'))) $this->errors[] = "Please set a valid web-service-url that when called will return the required user details";
 
         return empty($this->errors);
     }
@@ -109,6 +118,8 @@ EOT;
 
         // Do the lookup!
         list($status, $msg[], $user) = $this->verifyUsername($username);
+
+        $this->emDebug("Looking up $username", $status, $msg);
 
         // Username is VALID
         if ($status === true) {
@@ -162,9 +173,11 @@ EOT;
         $message = "";
         $user    = null;
 
-        if (in_array($username, $this->whitelist)) {
+        $this->emDebug("verifying $username with allowlist:" . json_encode($this->getAllowlist()));
+
+        if (in_array($username, $this->getAllowlist())) {
             $status  = true;
-        } elseif ($this->method == "web-service") {
+        } elseif ($this->getMethod() == "web-service") {
             // Make a new verifier and link it to the EM for logging
             $verifier = new WebServiceVerifier($this);
             $base_url = $this->getSystemSetting('web-service-url');
@@ -173,8 +186,7 @@ EOT;
             $user     = $verifier->getUser();
         } else {
             $this->emError("Invalid Method");
-            $status   = false;
-            $message      = "There is a configuration problem (invalid method) with " . $this->PREFIX . " - please notify your system administrator";
+            $message  = "There is a configuration problem (invalid method) with " . $this->PREFIX . " - please notify your system administrator";
         }
 
         return array($status, $message, $user);

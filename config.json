@@ -9,18 +9,14 @@
     { "0.1": "Initial" }
   ],
 
+  "framework-version": 13,
+
   "authors": [
     {
       "name": "Andrew Martin",
       "email": "andy123@stanford.edu",
       "institution": "Stanford University"
     }
-  ],
-
-  "permissions": [
-    "redcap_custom_verify_username",
-    "redcap_module_system_enable",
-    "redcap_module_save_configuration"
   ],
 
   "no-auth-pages": [
@@ -85,8 +81,8 @@
       "type": "text"
     },
     {
-      "key": "whitelist",
-      "name": "<b>Whitelisted Usernames</b><br>A comma-separated list of usernames to always verify as valid",
+      "key": "allowlist",
+      "name": "<b>Always Allow Usernames</b><br>A comma-separated list of usernames to always verify as valid",
       "required": false,
       "type": "text"
     },
