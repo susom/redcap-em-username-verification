@@ -16,7 +16,12 @@
       "name": "Andrew Martin",
       "email": "andy123@stanford.edu",
       "institution": "Stanford University"
-    }
+    },
+    {
+			"name": "Ryan Valentine",
+			"email": "rval@stanford.edu",
+			"institution": "Stanford University"
+		}
   ],
 
   "no-auth-pages": [
